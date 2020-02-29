@@ -240,6 +240,7 @@ class Volume extends FlysystemVolume
             'region' => $region,
             'endpoint' => $endpoint,
             'version' => 'latest',
+            'ACL' => 'public-read',
             'credentials' => [
                 'key' => $keyId,
                 'secret' => $secret,
