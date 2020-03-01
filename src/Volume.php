@@ -88,6 +88,12 @@ class Volume extends FlysystemVolume
      */
     public $contentDisposition = '';
 
+    /**
+     * @var string Asset Permissions value.
+     */
+    public $assetPermissions = '';
+
+
     // Getters
     // =========================================================================
 
@@ -119,8 +125,12 @@ class Volume extends FlysystemVolume
 	public function getRegion ()
 	{
 		return \Craft::parseEnv($this->region);
-	}
+    }
     
+    public function getPermission ()
+    {
+        return \Craft::parseEnv($this->permission);
+    }
     // Public Methods
     // =========================================================================
 
@@ -130,7 +140,7 @@ class Volume extends FlysystemVolume
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] = [['keyId', 'secret', 'region', 'bucket', 'endpoint'], 'required'];
+        $rules[] = [['keyId', 'secret', 'region', 'bucket', 'endpoint', 'permission'], 'required'];
 
         return $rules;
     }
@@ -148,7 +158,12 @@ class Volume extends FlysystemVolume
                 'inline' => 'inline',
                 'attachment' => 'attachment'
             ],
-            'contentDisposition' => $this->contentDisposition
+            'contentDisposition' => $this->contentDisposition,
+            'assetPermissionsOptions' => [
+                'private' => 'private',
+                'public' => 'public-read',
+            ],
+            'assetPermissions' => $this->assetPermissions
         ]);
     }
 
@@ -221,8 +236,9 @@ class Volume extends FlysystemVolume
         $secret = $this->getSecret();
         $region = $this->getRegion();
         $endpoint = $this->getEndpoint();
+        $permission = $this->getPermission();
 
-        return self::_buildConfigArray($keyId, $secret, $region, $endpoint);
+        return self::_buildConfigArray($keyId, $secret, $region, $endpoint, $permission);
     }
 
     /**
@@ -234,13 +250,13 @@ class Volume extends FlysystemVolume
      * @param $endpoint
      * @return array
      */
-    private static function _buildConfigArray($keyId = null, $secret = null, $region = null, $endpoint = null): array
+    private static function _buildConfigArray($keyId = null, $secret = null, $region = null, $endpoint = null, $permission = null): array
     {
         $config = [
             'region' => $region,
             'endpoint' => $endpoint,
             'version' => 'latest',
-            'ACL' => 'public-read',
+            'ACL' => $permission,
             'credentials' => [
                 'key' => $keyId,
                 'secret' => $secret,

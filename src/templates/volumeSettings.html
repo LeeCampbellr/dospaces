@@ -120,5 +120,14 @@
     class: 'do-content-disposition'
 }) }}
 
+{{ forms.selectField({
+    label: "Asset Permissions"|t,
+    instructions: ""|t,
+    id: 'assetPermissions',
+    name: assetPermissions,
+    options: assetPermissionsOptions,
+    value: volume.assetPermissions,
+    class: 'do-asset-permission'
+}) }}
 
 {% do view.registerAssetBundle("vaersaagod\\dospaces\\DoSpacesBundle") %}
