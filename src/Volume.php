@@ -127,10 +127,11 @@ class Volume extends FlysystemVolume
 		return \Craft::parseEnv($this->region);
     }
     
-    public function getPermission ()
+    public function getAssetPermissions ()
     {
-        return \Craft::parseEnv($this->permission);
+        return \Craft::parseEnv($this->assetPermissions);
     }
+    
     // Public Methods
     // =========================================================================
 
@@ -140,7 +141,7 @@ class Volume extends FlysystemVolume
     public function rules()
     {
         $rules = parent::rules();
-        $rules[] = [['keyId', 'secret', 'region', 'bucket', 'endpoint', 'permission'], 'required'];
+        $rules[] = [['keyId', 'secret', 'region', 'bucket', 'endpoint', 'assetPermissions'], 'required'];
 
         return $rules;
     }
@@ -161,7 +162,7 @@ class Volume extends FlysystemVolume
             'contentDisposition' => $this->contentDisposition,
             'assetPermissionsOptions' => [
                 'private' => 'private',
-                'public' => 'public-read',
+                'public-read' => 'public',
             ],
             'assetPermissions' => $this->assetPermissions
         ]);
@@ -236,9 +237,9 @@ class Volume extends FlysystemVolume
         $secret = $this->getSecret();
         $region = $this->getRegion();
         $endpoint = $this->getEndpoint();
-        $permission = $this->getPermission();
+        $assetPermissions = $this->getAssetPermissions();
 
-        return self::_buildConfigArray($keyId, $secret, $region, $endpoint, $permission);
+        return self::_buildConfigArray($keyId, $secret, $region, $endpoint, $assetPermissions);
     }
 
     /**
@@ -250,13 +251,13 @@ class Volume extends FlysystemVolume
      * @param $endpoint
      * @return array
      */
-    private static function _buildConfigArray($keyId = null, $secret = null, $region = null, $endpoint = null, $permission = null): array
+    private static function _buildConfigArray($keyId = null, $secret = null, $region = null, $endpoint = null, $assetPermissions = null): array
     {
         $config = [
             'region' => $region,
             'endpoint' => $endpoint,
             'version' => 'latest',
-            'ACL' => $permission,
+            'ACL' => $assetPermissions,
             'credentials' => [
                 'key' => $keyId,
                 'secret' => $secret,
